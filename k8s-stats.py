@@ -13,11 +13,14 @@ try:
 except ImportError:
     import urllib2
 
-api_server = 'https://API_SERVER_URL'
-token = 'TOKEN'
+arg_target=sys.argv[4];
+arg_mode=sys.argv[3];
+
+api_server =  sys.argv[1]; #'https://API_SERVER_URL'
+token = sys.argv[2];
 
 targets = ['pods','nodes','containers','deployments','apiservices','componentstatuses']
-target = 'pods' if 'containers' == sys.argv[2] else sys.argv[2]
+target = 'pods' if 'containers' == arg_target else arg_target
 
 if 'pods' == target or 'nodes' == target or 'componentstatuses' == target:
     api_req = '/api/v1/'+target
@@ -27,8 +30,8 @@ elif 'apiservices' == target:
     api_req = '/apis/apiregistration.k8s.io/v1/'+target
 
 def rawdata(qtime=30):
-    if sys.argv[2] in targets:
-        tmp_file='/tmp/zbx-'+target+'.tmp'
+    if arg_target in targets:
+        tmp_file='/tmp/zbx-'+api_server.replace(':','-').replace('/','-')+'.tmp'
         tmp_file_exists=True if os.path.isfile(tmp_file) else False
         if tmp_file_exists and (time.time()-os.path.getmtime(tmp_file)) <= qtime:
             file = open(tmp_file,'r')
@@ -55,9 +58,9 @@ def rawdata(qtime=30):
         return false
 
 
-if sys.argv[2] in targets:
+if arg_target in targets:
 
-        if 'discovery' == sys.argv[1]:
+        if 'discovery' == arg_mode:
 
             # discovery
 
@@ -65,9 +68,9 @@ if sys.argv[2] in targets:
             data = json.loads(rawdata())
 
             for item in data['items']:            
-                if 'nodes' == sys.argv[2] or 'componentstatuses' == sys.argv[2] or 'apiservices' == sys.argv[2]:
+                if 'nodes' == arg_target or 'componentstatuses' == arg_target or 'apiservices' == arg_target:
                     result['data'].append({'{#NAME}':item['metadata']['name']})
-                elif 'containers' == sys.argv[2]:
+                elif 'containers' == arg_target:
                     for cont in item['spec']['containers']:
                         result['data'].append({'{#NAME}':item['metadata']['name'],'{#NAMESPACE}':item['metadata']['namespace'],'{#CONTAINER}':cont['name']})
                 else:
@@ -75,13 +78,13 @@ if sys.argv[2] in targets:
 
             print(json.dumps(result))
 
-        elif 'stats' == sys.argv[1]:
+        elif 'stats' == arg_mode:
 
             # stats
 
             data = json.loads(rawdata(100))
 
-            if 'pods' == sys.argv[2] or 'deployments' == sys.argv[2]:
+            if 'pods' == arg_target or 'deployments' == arg_target:
                 for item in data['items']:
                     if item['metadata']['namespace'] == sys.argv[3] and item['metadata']['name'] == sys.argv[4]:
                         if 'statusPhase' == sys.argv[5]:
@@ -91,7 +94,7 @@ if sys.argv[2] in targets:
                                 print (item['status']['reason'])
                         elif 'statusReady' == sys.argv[5]:
                             for status in item['status']['conditions']:
-                                if status['type'] == 'Ready' or (status['type'] == 'Available' and 'deployments' == sys.argv[2]):
+                                if status['type'] == 'Ready' or (status['type'] == 'Available' and 'deployments' == arg_target):
                                     print(status['status'])
                                     break
                         elif 'containerReady' == sys.argv[5]:
@@ -115,14 +118,14 @@ if sys.argv[2] in targets:
                         elif 'updatedReplicas' == sys.argv[5]:
                             print (item['status']['updatedReplicas'])
                         break
-            if 'nodes' == sys.argv[2] or 'apiservices' == sys.argv[2]:
+            if 'nodes' == arg_target or 'apiservices' == arg_target:
                 for item in data['items']:
                     if item['metadata']['name'] == sys.argv[3]:
                         for status in item['status']['conditions']:
                             if status['type'] == sys.argv[4]:
                                 print(status['status'])
                                 break
-            elif 'componentstatuses' == sys.argv[2]:
+            elif 'componentstatuses' == arg_target:
                 for item in data['items']:
                     if item['metadata']['name'] == sys.argv[3]:
                         for status in item['conditions']:

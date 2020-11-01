@@ -17,7 +17,10 @@ arg_target=sys.argv[4];
 arg_mode=sys.argv[3];
 
 api_server =  sys.argv[1]; #'https://API_SERVER_URL'
-token = sys.argv[2];
+token_file = sys.argv[2];
+with open(token_file, 'r') as file:
+    token = file.read().replace('\n', '')
+
 
 targets = ['pods','nodes','containers','deployments','apiservices','componentstatuses']
 target = 'pods' if 'containers' == arg_target else arg_target
@@ -31,7 +34,7 @@ elif 'apiservices' == target:
 
 def rawdata(qtime=30):
     if arg_target in targets:
-        tmp_file='/tmp/zbx-'+api_server.replace(':','-').replace('/','-')+'.tmp'
+        tmp_file='/tmp/zbx-'+api_server.replace(':','-').replace('/','-')+'-'+target+'.tmp'
         tmp_file_exists=True if os.path.isfile(tmp_file) else False
         if tmp_file_exists and (time.time()-os.path.getmtime(tmp_file)) <= qtime:
             file = open(tmp_file,'r')
@@ -86,20 +89,20 @@ if arg_target in targets:
 
             if 'pods' == arg_target or 'deployments' == arg_target:
                 for item in data['items']:
-                    if item['metadata']['namespace'] == sys.argv[3] and item['metadata']['name'] == sys.argv[4]:
-                        if 'statusPhase' == sys.argv[5]:
+                    if item['metadata']['namespace'] == sys.argv[5] and item['metadata']['name'] == sys.argv[6]:
+                        if 'statusPhase' == sys.argv[7]:
                             print(item['status']['phase'])
-                        elif 'statusReason' == sys.argv[5]:
+                        elif 'statusReason' == sys.argv[7]:
                             if 'reason' in item['status']:
                                 print (item['status']['reason'])
-                        elif 'statusReady' == sys.argv[5]:
+                        elif 'statusReady' == sys.argv[7]:
                             for status in item['status']['conditions']:
                                 if status['type'] == 'Ready' or (status['type'] == 'Available' and 'deployments' == arg_target):
                                     print(status['status'])
                                     break
-                        elif 'containerReady' == sys.argv[5]:
+                        elif 'containerReady' == sys.argv[7]:
                             for status in item['status']['containerStatuses']:
-                                if status['name'] == sys.argv[6]:
+                                if status['name'] == sys.argv[8]:
                                     for state in status['state']:
                                         if state == 'terminated':
                                             if status['state']['terminated']['reason'] == 'Completed':
@@ -108,27 +111,27 @@ if arg_target in targets:
                                     else:
                                         print(status['ready'])
                                         break
-                        elif 'containerRestarts' == sys.argv[5]:
+                        elif 'containerRestarts' == sys.argv[7]:
                             for status in item['status']['containerStatuses']:
-                                if status['name'] == sys.argv[6]:
+                                if status['name'] == sys.argv[8]:
                                     print(status['restartCount'])
                                     break
-                        elif 'Replicas' == sys.argv[5]:
+                        elif 'Replicas' == sys.argv[7]:
                             print (item['spec']['replicas'])
-                        elif 'updatedReplicas' == sys.argv[5]:
+                        elif 'updatedReplicas' == sys.argv[7]:
                             print (item['status']['updatedReplicas'])
                         break
             if 'nodes' == arg_target or 'apiservices' == arg_target:
                 for item in data['items']:
-                    if item['metadata']['name'] == sys.argv[3]:
+                    if item['metadata']['name'] == sys.argv[5]:
                         for status in item['status']['conditions']:
-                            if status['type'] == sys.argv[4]:
+                            if status['type'] == sys.argv[6]:
                                 print(status['status'])
                                 break
             elif 'componentstatuses' == arg_target:
                 for item in data['items']:
-                    if item['metadata']['name'] == sys.argv[3]:
+                    if item['metadata']['name'] == sys.argv[5]:
                         for status in item['conditions']:
-                            if status['type'] == sys.argv[4]:
+                            if status['type'] == sys.argv[6]:
                                 print(status['status'])
                                 break

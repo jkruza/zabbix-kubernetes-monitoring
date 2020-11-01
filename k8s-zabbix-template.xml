@@ -51,7 +51,7 @@
                     <item_prototypes>
                         <item_prototype>
                             <name>ApiServices: {#NAME} Status Available</name>
-                            <key>k8s.stats[apiservices,{#NAME},Available]</key>
+                            <key>k8s-stats.py[{$K8S_CLUSTER_URL},{$K8S_CLUSTER_TOKEN},stats,apiservices,{#NAME},Available]</key>
                             <delay>60s</delay>
                             <trends>0</trends>
                             <value_type>TEXT</value_type>
@@ -75,8 +75,8 @@
                     </item_prototypes>
                 </discovery_rule>
                 <discovery_rule>
-                    <name>Clusters</name>
-                    <key>k8s.discovery[clusters]</key>
+                    <name>Clusters</name> 
+                    <key>k8s-stats.py[{$K8S_CLUSTER_URL},{$K8S_CLUSTER_TOKEN},discovery,clusters]</key>
                     <delay>50s</delay>
                     <status>DISABLED</status>
                     <lifetime>1h</lifetime>
@@ -114,10 +114,10 @@
                     <key>k8s.discovery[componentstatuses]</key>
                     <delay>50s</delay>
                     <lifetime>1h</lifetime>
-                    <item_prototypes>
+                    <item_prototypes>   
                         <item_prototype>
                             <name>ComponentStatuses: {#NAME} Status Healthy</name>
-                            <key>k8s.stats[componentstatuses,{#NAME},Healthy]</key>
+                            <key>k8s-stats.py[{$K8S_CLUSTER_URL},{$K8S_CLUSTER_TOKEN},stats,componentstatuses,{#NAME},Healthy]</key>
                             <delay>60s</delay>
                             <trends>0</trends>
                             <value_type>TEXT</value_type>
@@ -148,7 +148,7 @@
                     <item_prototypes>
                         <item_prototype>
                             <name>Pod {#NAME} container {#CONTAINER} (ns {#NAMESPACE}) Status Ready</name>
-                            <key>k8s.stats[pods,{#NAMESPACE},{#NAME},containerReady,{#CONTAINER}]</key>
+                            <key>k8s-stats.py[{$K8S_CLUSTER_URL},{$K8S_CLUSTER_TOKEN},stats,pods,{#NAMESPACE},{#NAME},containerReady,{#CONTAINER}]</key>
                             <delay>60s</delay>
                             <trends>0</trends>
                             <value_type>TEXT</value_type>
@@ -171,7 +171,7 @@
                         </item_prototype>
                         <item_prototype>
                             <name>Pod {#NAME} container {#CONTAINER} (ns {#NAMESPACE}) Restart Count</name>
-                            <key>k8s.stats[pods,{#NAMESPACE},{#NAME},containerRestarts,{#CONTAINER}]</key>
+                            <key>k8s-stats.py[{$K8S_CLUSTER_URL},{$K8S_CLUSTER_TOKEN},stats,pods,{#NAMESPACE},{#NAME},containerRestarts,{#CONTAINER}]</key>
                             <delay>60s</delay>
                             <applications>
                                 <application>
@@ -201,9 +201,9 @@
                         <item_prototype>
                             <name>Deployments: {#NAME} (ns {#NAMESPACE}) NOT UPDATED replicas</name>
                             <type>CALCULATED</type>
-                            <key>k8s.stats[deployments,{#NAMESPACE},{#NAME},notUpdated]</key>
+                            <key>k8s-stats.py[{$K8S_CLUSTER_URL},{$K8S_CLUSTER_TOKEN},stats,deployments,{#NAMESPACE},{#NAME},notUpdated]</key>
                             <delay>60s</delay>
-                            <params>last(&quot;k8s.stats[deployments,{#NAMESPACE},{#NAME},Replicas]&quot;)-last(&quot;k8s.stats[deployments,{#NAMESPACE},{#NAME},updatedReplicas]&quot;)</params>
+                            <params>last(&quot;k8s-stats.py[{$K8S_CLUSTER_URL},{$K8S_CLUSTER_TOKEN},stats,deployments,{#NAMESPACE},{#NAME},Replicas]&quot;)-last(&quot;k8s-stats.py[{$K8S_CLUSTER_URL},{$K8S_CLUSTER_TOKEN},stats,deployments,{#NAMESPACE},{#NAME},updatedReplicas]&quot;)</params>
                             <applications>
                                 <application>
                                     <name>Kubernetes</name>
@@ -223,7 +223,7 @@
                         </item_prototype>
                         <item_prototype>
                             <name>Deployments: {#NAME} (ns {#NAMESPACE}) Desired replicas</name>
-                            <key>k8s.stats[deployments,{#NAMESPACE},{#NAME},Replicas]</key>
+                            <key>k8s-stats.py[{$K8S_CLUSTER_URL},{$K8S_CLUSTER_TOKEN},stats,deployments,{#NAMESPACE},{#NAME},Replicas]</key>
                             <delay>60s</delay>
                             <applications>
                                 <application>
@@ -236,7 +236,7 @@
                         </item_prototype>
                         <item_prototype>
                             <name>Deployments: {#NAME} (ns {#NAMESPACE}) Status</name>
-                            <key>k8s.stats[deployments,{#NAMESPACE},{#NAME},statusReady]</key>
+                            <key>k8s-stats.py[{$K8S_CLUSTER_URL},{$K8S_CLUSTER_TOKEN},stats,deployments,{#NAMESPACE},{#NAME},statusReady]</key>
                             <delay>60s</delay>
                             <trends>0</trends>
                             <value_type>TEXT</value_type>
@@ -259,7 +259,7 @@
                         </item_prototype>
                         <item_prototype>
                             <name>Deployments: {#NAME} (ns {#NAMESPACE}) UPDATED replicas</name>
-                            <key>k8s.stats[deployments,{#NAMESPACE},{#NAME},updatedReplicas]</key>
+                            <key>k8s-stats.py[{$K8S_CLUSTER_URL},{$K8S_CLUSTER_TOKEN},stats,deployments,{#NAMESPACE},{#NAME},updatedReplicas]</key>
                             <delay>60s</delay>
                             <applications>
                                 <application>
@@ -279,7 +279,7 @@
                     <item_prototypes>
                         <item_prototype>
                             <name>Node: {#NAME} Status: DiskPressure</name>
-                            <key>k8s.stats[nodes,{#NAME},DiskPressure]</key>
+                            <key>k8s-stats.py[{$K8S_CLUSTER_URL},{$K8S_CLUSTER_TOKEN},stats,nodes,{#NAME},DiskPressure]</key>
                             <delay>60s</delay>
                             <trends>0</trends>
                             <value_type>TEXT</value_type>
@@ -302,7 +302,7 @@
                         </item_prototype>
                         <item_prototype>
                             <name>Node: {#NAME} Status: MemoryPressure</name>
-                            <key>k8s.stats[nodes,{#NAME},MemoryPressure]</key>
+                            <key>k8s-stats.py[{$K8S_CLUSTER_URL},{$K8S_CLUSTER_TOKEN},stats,nodes,{#NAME},MemoryPressure]</key>
                             <delay>60s</delay>
                             <trends>0</trends>
                             <value_type>TEXT</value_type>
@@ -325,7 +325,7 @@
                         </item_prototype>
                         <item_prototype>
                             <name>Node: {#NAME} Status: OutOfDisk</name>
-                            <key>k8s.stats[nodes,{#NAME},OutOfDisk]</key>
+                            <key>k8s-stats.py[{$K8S_CLUSTER_URL},{$K8S_CLUSTER_TOKEN},stats,nodes,{#NAME},OutOfDisk]</key>
                             <delay>60s</delay>
                             <trends>0</trends>
                             <value_type>TEXT</value_type>
@@ -348,7 +348,7 @@
                         </item_prototype>
                         <item_prototype>
                             <name>Node: {#NAME} Status: PIDPressure</name>
-                            <key>k8s.stats[nodes,{#NAME},PIDPressure]</key>
+                            <key>k8s-stats.py[{$K8S_CLUSTER_URL},{$K8S_CLUSTER_TOKEN},stats,nodes,{#NAME},PIDPressure]</key>
                             <delay>60s</delay>
                             <trends>0</trends>
                             <value_type>TEXT</value_type>
@@ -371,7 +371,7 @@
                         </item_prototype>
                         <item_prototype>
                             <name>Node: {#NAME} Status: Ready</name>
-                            <key>k8s.stats[nodes,{#NAME},Ready]</key>
+                            <key>k8s-stats.py[{$K8S_CLUSTER_URL},{$K8S_CLUSTER_TOKEN},stats,nodes,{#NAME},Ready]</key>
                             <delay>60s</delay>
                             <trends>0</trends>
                             <value_type>TEXT</value_type>
@@ -402,7 +402,7 @@
                     <item_prototypes>
                         <item_prototype>
                             <name>Pod: {#NAME} (ns {#NAMESPACE}) Phase</name>
-                            <key>k8s.stats[pods,{#NAMESPACE},{#NAME},statusPhase]</key>
+                            <key>k8s-stats.py[{$K8S_CLUSTER_URL},{$K8S_CLUSTER_TOKEN},stats,pods,{#NAMESPACE},{#NAME},statusPhase]</key>
                             <delay>60s</delay>
                             <trends>0</trends>
                             <value_type>TEXT</value_type>
@@ -437,7 +437,7 @@
                         </item_prototype>
                         <item_prototype>
                             <name>Pod: {#NAME} (ns {#NAMESPACE}) Status Ready</name>
-                            <key>k8s.stats[pods,{#NAMESPACE},{#NAME},statusReady]</key>
+                            <key>k8s-stats.py[{$K8S_CLUSTER_URL},{$K8S_CLUSTER_TOKEN},stats,pods,{#NAMESPACE},{#NAME},statusReady]</key>
                             <delay>60s</delay>
                             <trends>0</trends>
                             <value_type>TEXT</value_type>
@@ -452,7 +452,7 @@
                         </item_prototype>
                         <item_prototype>
                             <name>Pod: {#NAME} (ns {#NAMESPACE}) Status Failed, Reason Evicted</name>
-                            <key>k8s.stats[pods,{#NAMESPACE},{#NAME},statusReason]</key>
+                            <key>k8s-stats.py[{$K8S_CLUSTER_URL},{$K8S_CLUSTER_TOKEN},stats,pods,{#NAMESPACE},{#NAME},statusReason]</key>
                             <delay>60s</delay>
                             <trends>0</trends>
                             <value_type>TEXT</value_type>
